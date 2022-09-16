@@ -1,0 +1,77 @@
+{
+    "number_of_agents": 5,
+    "agent_parameters": {
+        "stepsize": 1.0,
+        "step_fragment": 4,
+        "allow_retrocession": true,
+        "agent_specific": [{
+            "std_dev_position": 0.023,
+            "std_dev_angle": 0.023,
+            "estimated_information_position": 1890.359168241966,
+            "estimated_information_angle": 1890.359168241966,
+            "std_dev_intra_loop_closure_position": 0.023,
+            "std_dev_intra_loop_closure_angle": 0.023,
+            "estimated_information_intra_position": 1890.359168241966,
+            "estimated_information_intra_angle": 1890.359168241966,
+            "intra_loop_closure_radius": 3,
+            "agent_random_number_generator_seed": 1406,
+            "same_position_intra_loop_closure_probability": 0.5
+        },
+        {
+            "std_dev_position": 0.023,
+            "std_dev_angle": 0.023,
+            "estimated_information_position": 1890.359168241966,
+            "estimated_information_angle": 1890.359168241966,
+            "std_dev_intra_loop_closure_position": 0.023,
+            "std_dev_intra_loop_closure_angle": 0.023,
+            "estimated_information_intra_position": 1890.359168241966,
+            "estimated_information_intra_angle": 1890.359168241966,
+            "intra_loop_closure_radius": 3,
+            "agent_random_number_generator_seed": 1302,
+            "same_position_intra_loop_closure_probability": 0.5
+        },
+        {
+            "std_dev_position": 0.023,
+            "std_dev_angle": 0.023,
+            "estimated_information_position": 1890.359168241966,
+            "estimated_information_angle": 1890.359168241966,
+            "std_dev_intra_loop_closure_position": 0.023,
+            "std_dev_intra_loop_closure_angle": 0.023,
+            "estimated_information_intra_position": 1890.359168241966,
+            "estimated_information_intra_angle": 1890.359168241966,
+            "intra_loop_closure_radius": 3,
+            "agent_random_number_generator_seed": 3096,
+            "same_position_intra_loop_closure_probability": 0.5
+        },
+        {
+            "std_dev_position": 0.023,
+            "std_dev_angle": 0.023,
+            "estimated_information_position": 1890.359168241966,
+            "estimated_information_angle": 1890.359168241966,
+            "std_dev_intra_loop_closure_position": 0.023,
+            "std_dev_intra_loop_closure_angle": 0.023,
+            "estimated_information_intra_position": 1890.359168241966,
+            "estimated_information_intra_angle": 1890.359168241966,
+            "intra_loop_closure_radius": 3,
+            "agent_random_number_generator_seed": 7324,
+            "same_position_intra_loop_closure_probability": 0.5
+        },
+        {
+            "std_dev_position": 0.023,
+            "std_dev_angle": 0.023,
+            "estimated_information_position": 1890.359168241966,
+            "estimated_information_angle": 1890.359168241966,
+            "std_dev_intra_loop_closure_position": 0.023,
+            "std_dev_intra_loop_closure_angle": 0.023,
+            "estimated_information_intra_position": 1890.359168241966,
+            "estimated_information_intra_angle": 1890.359168241966,
+            "intra_loop_closure_radius": 3,
+            "agent_random_number_generator_seed": 2468,
+            "same_position_intra_loop_closure_probability": 0.5
+        }
+    ]},
+    "inter_agent_loop_closure_parameters": {
+        "same_position_inter_loop_closure_probability": 1.0,
+        "random_number_generator_seed": 2708
+    }
+}

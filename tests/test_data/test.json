@@ -1,0 +1,38 @@
+{
+    "number_of_agents": 2,
+    "agent_parameters": {
+        "stepsize": 1.5,
+        "step_fragment": 2,
+        "allow_retrocession": true,
+        "agent_specific": [{
+            "std_dev_position": 1,
+            "std_dev_angle": 2,
+            "estimated_information_position": 3,
+            "estimated_information_angle": 4,
+            "std_dev_intra_loop_closure_position": 5,
+            "std_dev_intra_loop_closure_angle": 6,
+            "estimated_information_intra_position": 7,
+            "estimated_information_intra_angle": 8,
+            "intra_loop_closure_radius": 9,
+            "agent_random_number_generator_seed": 10,
+            "same_position_intra_loop_closure_probability": 11
+        },
+        {
+            "std_dev_position": 12,
+            "std_dev_angle": 13,
+            "estimated_information_position": 14,
+            "estimated_information_angle": 15,
+            "std_dev_intra_loop_closure_position": 16,
+            "std_dev_intra_loop_closure_angle": 17,
+            "estimated_information_intra_position": 18,
+            "estimated_information_intra_angle": 19,
+            "intra_loop_closure_radius": 20,
+            "agent_random_number_generator_seed": 21,
+            "same_position_intra_loop_closure_probability": 22
+        }
+    ]},
+    "inter_agent_loop_closure_parameters": {
+        "same_position_inter_loop_closure_probability": 23,
+        "random_number_generator_seed": 24
+    }
+}

@@ -1,0 +1,50 @@
+patch.linewidth: 0.5
+patch.facecolor: 348ABD  # blue
+patch.edgecolor: EEEEEE
+patch.antialiased: True
+
+font.size: 10.0
+
+axes.facecolor: e0e0e0
+axes.edgecolor: white
+axes.linewidth: 1
+axes.grid: True
+axes.titlesize: x-large
+axes.labelsize: large
+axes.labelcolor: 555555
+axes.axisbelow: True       # grid/ticks are below elements (e.g., lines, text)
+
+axes.prop_cycle: cycler('color', ["ff3232","0082f0","af78d2","767676","fad22d","0fc373","ff8c0a"])
+    # Primary blues
+    #000082: Blue 1
+    #0050ca: Blue 2
+    #0082f0: Ericsson Blue
+    #48a8fa: Blue 3
+    #85ccff: Blue 4
+    # Secondary colors
+    #0fc373: Green
+    #fad22d: Yellow
+    #ff8c0a: Orange
+    #ff3232: Red
+    #af78d2: Purple
+    # Neutral tones
+    #000000: Black
+    #242424: Gray 1
+    #767676: Gray 2
+    #a0a0a0: Gray 3
+    #e0e0e0: Gray 4
+    #f2f2f2: Gray 5
+    #fafafa: Ericsson White
+    #ffffff: White
+
+xtick.color: 555555
+xtick.direction: out
+
+ytick.color: 555555
+ytick.direction: out
+
+grid.color: white
+grid.linestyle: -    # solid line
+
+figure.facecolor: white
+figure.edgecolor: 0.50

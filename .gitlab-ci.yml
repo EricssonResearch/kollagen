@@ -1,0 +1,22 @@
+image: ubuntu:jammy
+
+variables:
+  DEBIAN_FRONTEND: noninteractive
+  GIT_SUBMODULE_STRATEGY: recursive
+
+stages:
+  - test-and-build
+
+test:
+  stage: test-and-build
+  script:
+    - cat .build_script.sh | /bin/bash
+  only:
+    - master
+    - develop
+    - merge_requests
+  artifacts:
+    paths:
+      - build/
+      - doc/
+    expire_in: 1 day
