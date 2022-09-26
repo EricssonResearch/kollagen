@@ -10,17 +10,17 @@ In the generated multi-agent pose graphs, inspired by the popular M3500 dataset,
 The pose graph consists of nodes and edges, where the nodes represent the poses of the agents and the edges represent a relative transformation from one pose to the other.
 
 The pose graph generation has three major components:
-1. **Ground truth generation:** (see `step()` function in `include/DataGenerator.h`)  
+1. **Ground truth generation:**  
 To generate the ground truth of each agent, we first let each agent turn randomly by -180, -90, 0, or 90 degrees.
 Then the agent moves a pre-defined amount of steps in that direction. 
 This is repeated for a user-specified amount of times.
 
-2. **Noisy odometry generation:**  (see `simulate_steps()` in `include/Walker-impl.h`)  
+2. **Noisy odometry generation:**  
 The ground truth of two consecutive poses is used to obtain a true distance and relative angle between the poses. 
 The distance and relative angle are each modified by adding a zero-mean normally distributed noise terms with a user-specified standard deviations. 
 In this way, ***kollagen*** generates noisy odometry for all consecutive poses. The noisy odometry is encoded in the edge between the two consecutive nodes in the form of a noisy relative transformation.
 
-3. **Loop closure generation:** (see `intra_agent_loopclose()` and `inter_agent_loopclose()` in `include/DataGenerator.h`)  
+3. **Loop closure generation:**  
 Loop closures are edges between two (possibly non-consecutive) nodes. The idea behind loop closures is that an agent recognizes a pose and creates an edge, encoding a noisy relative transformation between the poses, in the pose graph between its current pose and the recognized pose. 
 The noisy relative transformation encoded by the edge is obtained similarly to the noisy odometry, i.e., adding a zero-mean normally distributed noise to the true distance and relative angle between the poses, which is then used to obtain the noisy relative transformation.
 There are two types of loop closures in ***kollagen***:  
