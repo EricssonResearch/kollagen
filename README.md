@@ -4,7 +4,7 @@ A Collaborative SLAM Pose Graph Generator
 
 This is a header-only data generator library which generates multi-agent pose graphs.
 
-⚠️ __NB:__ Some of the pronounced features (such as generation from json files) is currently under development
+⚠️ __NB:__ Some of the pronounced features (such as generation from json files) are currently under development
 
 ## Overview of the generation procedure
 
