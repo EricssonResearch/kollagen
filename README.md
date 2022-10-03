@@ -4,6 +4,8 @@ A Collaborative SLAM Pose Graph Generator
 
 This is a header-only data generator library which generates multi-agent pose graphs.
 
+⚠️ __NB:__ Some of the pronounced features (such as generation from json files) is currently under development
+
 ## Overview of the generation procedure
 
 In the generated multi-agent pose graphs, inspired by the popular M3500 dataset, introduced by [Olson et al. in 2006](http://rvsn.csail.mit.edu/content/eolson/graphoptim/eolson-graphoptim2006.pdf), the agents move on a planar grid world.
