@@ -54,10 +54,10 @@ int main() {
 
   data_gen.generate();
 
-  data_gen.save_multig2o("Example3600");
-  data_gen.save_singleg2o("Example3600.g2o", false);
-  data_gen.save_singleTUM("Example3600_GT.tum");
-  data_gen.save_singleTUM("Example3600.tum", false);
+  data_gen.save_multig2o("Example4800");
+  data_gen.save_singleg2o("Example4800.g2o", false);
+  data_gen.save_singleTUM("Example4800_GT.tum");
+  data_gen.save_singleTUM("Example4800.tum", false);
 
   std::cout << data_gen.LCs().size() << " inter agent LCs!" << std::endl;
 

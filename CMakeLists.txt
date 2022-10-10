@@ -30,6 +30,9 @@ include_directories(
 
 add_executable(example src/example.cpp)
 add_executable(timing src/timing.cpp)
+add_executable(generate src/generate.cpp)
+
+add_custom_target(${PROJECT_NAME}-symlink ALL ln --force -s ${CMAKE_CURRENT_BINARY_DIR}/generate ${CMAKE_SOURCE_DIR}/generate DEPENDS generate)
 
 if(BUILD_TESTING AND DATAGEN_ENABLE_TESTS)
     add_subdirectory(tests)

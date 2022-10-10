@@ -15,6 +15,7 @@ configure_file(test_data/walker2_3D.g2o ${TEST_DATA_DIR}/walker2_3D.g2o COPYONLY
 configure_file(test_data/walker1.tum ${TEST_DATA_DIR}/walker1.tum COPYONLY)
 configure_file(test_data/walker2.tum ${TEST_DATA_DIR}/walker2.tum COPYONLY)
 configure_file(test_data/test.json ${TEST_DATA_DIR}/test.json COPYONLY)
+configure_file(test_data/test2.json ${TEST_DATA_DIR}/test2.json COPYONLY)
 
 add_test(
     NAME ${TEST_BINARY}

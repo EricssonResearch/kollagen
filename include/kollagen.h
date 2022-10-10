@@ -1,8 +1,9 @@
 #include "Functions.h"
 #include "DataGenerator.h"
+#include "json_parse.h"
 
-#ifndef DATA_GENERATOR_H
-#define DATA_GENERATOR_H
+#ifndef KOLLAGEN_H
+#define KOLLAGEN_H
 
 
-#endif /* !DATA_GENERATOR_H */
+#endif /* !KOLLAGEN_H */

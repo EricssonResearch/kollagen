@@ -1,0 +1,3 @@
+# Output files should be ignored, but this directory is good to have
+*
+!.gitignore
