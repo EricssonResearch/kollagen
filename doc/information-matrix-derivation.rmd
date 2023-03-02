@@ -1,0 +1,448 @@
+---
+title: Information Matrix Derivation
+lang: en
+header-includes:
+   - \usepackage{graphicx}
+   - \usepackage{csquotes}
+   - \usepackage{cleveref}
+   - \usepackage{mathptmx}
+   - \usepackage{float}
+   - |
+     ```{=latex}
+     %
+     ```
+output:
+  bookdown::pdf_document2:
+    toc: false
+  bookdown::html_document2: default
+abstract: In this document, we will derive expected value, covariance matrix and the information matrix of the measurement model for a planar agent's odometry used in _kollagen_. The information matrix is needed in the `.g2o` format because a difference in the position and the heading is saved together with an information matrix. This difference is based on the relative motion between two pose.
+urlcolor: blue
+anchorcolor: black
+linkcolor: black
+citecolor: black
+---
+
+<style type="text/css">
+body{
+  font-family: "Nimbus Roman", "Times New Roman", Times, serif;
+  font-size: 18px;
+}
+
+td {  /* Table  */
+  font-size: 16px;
+}
+h1.title {
+  font-size: 24px;
+  font-weight: bold;
+}
+h1 { /* Header 1 */
+  font-size: 24px;
+  font-weight: bold;
+}
+h2 { /* Header 2 */
+  font-size: 22px;
+  font-weight: bold;
+}
+h3 { /* Header 3 */
+  font-size: 20px;
+  font-weight: bold;
+}
+code.r{ /* Code block */
+    font-size: 18px;
+}
+pre { /* Code block - determines code spacing between lines */
+    font-size: 18px;
+}
+</style>
+
+# Ground Truth Trajectory
+
+First, we begin by describing how the ground truth trajectory is generated, where an agent's pose is described by a position $(x,y)$ and a heading $\theta$.
+The agent starts at a certain position with a certain heading.
+To go from pose $i$ to pose $j$, we assume that the agent turns first in the direction of pose $j$ and then moves to pose $j$ from pose $i$. 
+This can mathematically be described as
+\begin{align*}
+\theta_j&=\theta_i+\Delta \theta_{ij},\\
+x_j&=x_i+\Delta \ell_{ij}\cos(\theta_j),\\
+y_j&=y_i+\Delta \ell_{ij}\sin(\theta_j),
+\end{align*}
+where $\Delta \ell_{ij}=\sqrt{(x_j-x_i)^2+(y_j-y_i)^2}$ and $\Delta \theta_{ij}=\mathrm{arctan2}(y_j-y_i,x_j-x_i)$.
+This is the noiseless ground truth trajectory, where in the relative coordinate frame of an agent, the true change in $x$ and $y$ direction between two poses is given by
+\begin{align*}
+	\Delta x_{ij} &= \Delta \ell_{ij}\cos(\Delta \theta_{ij}),\\
+	\Delta y_{ij} &= \Delta \ell_{ij}\sin(\Delta \theta_{ij}).
+\end{align*}
+
+# Expected Value, Covariance Matrix, and Information Matrix of Noisy Odometry Measurements {#OdomMeasurements}
+
+In the previous section, we introduced the ground truth trajectory and true relative changes of an agent's trajectory.
+In this section, we will derive the expected value and covariance matrix of the noisy estimates of $\Delta \theta_{ij}$, $\Delta x_{ij}$, and $\Delta y_{ij}$ in the relative coordinate frame, since the measurements saved in the `.g2o` format are in the relative coordinate frame. 
+To obtain these estimates we use noisy odometry measurements, which consist of the change in the heading and the distance traveled between two poses,
+\begin{align*}
+\Delta \hat{\ell}_{ij}&=\Delta \ell_{ij}+\tilde{\ell}\\
+\Delta \hat{\theta}_{ij}&=\Delta \theta_{ij}+\tilde{\theta},
+\end{align*}
+where $\tilde{\theta}\sim\mathcal{N}(0,\sigma_{\mathrm{ang}}^2)$, $\tilde{\ell}\sim\mathcal{N}(0,\sigma_{\mathrm{pos}}^2)$, $\tilde{\ell}$ and $\tilde{\theta}$ are independent, and $\mathcal{N}(\mu,\sigma^2)$ denotes a Gaussian distribution with mean $\mu$ and variance $\sigma^2$.
+The estimates for the relative change in $x$ and $y$ are then given by 
+\begin{align*}
+\Delta \hat{x}_{ij} &= \Delta \hat{\ell}_{ij}\cos(\Delta \hat{\theta}_{ij}),\\
+\Delta \hat{y}_{ij} &= \Delta \hat{\ell}_{ij}\sin(\Delta \hat{\theta}_{ij}),
+\end{align*}
+
+With these noisy measurements, let us now look into the expected value and the covariances of $\Delta \hat{\theta}_{ij}$, $\Delta \hat{x}_{ij}$, and $\Delta \hat{y}_{ij}$.
+Here, we use $\mathbb{E}(X)$, $\mathrm{Var}(X)$, and $\mathrm{Cov}(X,Y)$ to denote the expected value, variance, and covariance of two random variable $X$ and $Y$.
+Since $\Delta \hat{\theta}_{ij}$ is the true value influenced by additive Gaussian noise we obtain that
+\begin{align*}
+	\mathbb{E}(\Delta \hat{\theta}_{ij})&=\Delta \theta_{ij},\\
+	\mathrm{Var}(\Delta \hat{\theta}_{ij})&=\sigma_{\mathrm{ang}}^2,
+\end{align*}
+which shows us that the measurement $\Delta \hat{\theta}_{ij}$ is unbiased.
+Next, we look at the expected value of $\Delta \hat{x}_{ij}$ and $\Delta \hat{y}_{ij}$, respectively.
+\begin{equation}
+\begin{aligned}
+\mathbb{E}(\Delta \hat{x}_{ij}) &= \mathbb{E}(\Delta \hat{\ell}_{ij})\mathbb{E}(\cos(\Delta \hat{\theta}_{ij})) = \Delta \ell_{ij}\mathbb{E}(\cos(\Delta \theta_{ij})\cos(\epsilon_\theta)-\sin(\Delta \theta_{ij})\sin(\epsilon_\theta)) \\
+&=\Delta \ell_{ij}\cos(\Delta \theta_{ij})e^{-\frac{1}{2}\sigma_{\mathrm{ang}}^2},
+\end{aligned}
+(\#eq:ExptDeltaX)
+\end{equation}
+where we used that $\tilde{\ell}$ and $\tilde{\theta}$ are independent as well as \@ref(eq:ExptSine) and \@ref(eq:ExptCos).
+Similarly, we obtain that
+\begin{equation}
+\begin{aligned}
+\mathbb{E}(\Delta \hat{y}_{ij}) &= \mathbb{E}(\Delta \hat{\ell}_{ij})\mathbb{E}(\sin(\Delta \hat{\theta}_{ij})) = \Delta \ell_{ij}\mathbb{E}(\cos(\Delta \theta_{ij})\sin(\epsilon_\theta)+\sin(\Delta \theta_{ij})\cos(\epsilon_\theta)) \\
+&=\Delta \ell_{ij}\sin(\Delta \theta_{ij})e^{-\frac{1}{2}\sigma_{\mathrm{ang}}^2}.
+\end{aligned}
+(\#eq:ExptDeltaY)
+\end{equation}
+From \@ref(eq:ExptDeltaX) and \@ref(eq:ExptDeltaY), we observe that the measurements of $\Delta x_{ij}$ and $\Delta y_{ij}$ are biased and the bias depends on $\sigma_{\mathrm{ang}}^2$.
+
+Next let us derive the variance for $\Delta \hat{x}_{ij}$ and $\Delta \hat{y}_{ij}$.
+We begin with the variance of $\Delta \hat{x}_{ij}$,
+\begin{align*}
+\mathrm{Var}(\Delta \hat{x}_{ij}) = \mathbb{E}(\Delta \hat{x}_{ij}^2)-\mathbb{E}(\Delta \hat{x}_{ij})^2.
+\end{align*}
+Since we already know the expected value, we will focus on the first term,
+\begin{align*}
+\mathbb{E}(\Delta \hat{x}_{ij}^2)&=\mathbb{E}(\Delta \hat{\ell}_{ij}^2\cos(\Delta \hat{\theta}_{ij})^2)\\
+&=\mathbb{E}(\Delta \hat{\ell}_{ij}^2)\mathbb{E}(\cos(\Delta \hat{\theta}_{ij})^2)=(\Delta \ell_{ij}^2+\sigma_{\mathrm{pos}}^2)\mathbb{E}(\cos(\Delta \theta_{ij}+\epsilon_{\sigma})^2)\\
+&=(\Delta \ell_{ij}^2+\sigma_{\mathrm{pos}}^2)\left(\frac{1}{2}+\frac{1}{2}\cos(2\Delta \theta_{ij})e^{-2\sigma_{\mathrm{ang}}^2}\right),
+\end{align*}
+where we again used that $\tilde{\ell}$ and $\tilde{\theta}$ are independent as well as \@ref(eq:ExptValCosSquared). 
+From the last formula it follows that 
+\begin{align*}
+\mathrm{Var}(\Delta \hat{x}_{ij})=\frac{(\Delta \ell_{ij}^2+\sigma_{\mathrm{pos}}^2)}{2}\left(1+\cos(2\Delta \theta_{ij})e^{-2\sigma_{\mathrm{ang}}^2}\right)-\Delta \ell_{ij}^2\cos(\Delta \theta_{ij})^2e^{-\sigma_{\mathrm{ang}}^2}.
+\end{align*}
+
+With a similar argument, we obtain
+\begin{align*}
+\mathrm{Var}(\Delta \hat{y}_{ij})=\frac{(\Delta \ell_{ij}^2+\sigma_{\mathrm{pos}}^2)}{2}\left(1-\cos(2\Delta \theta_{ij})e^{-2\sigma_{\mathrm{ang}}^2}\right)-\Delta \ell_{ij}^2\sin(\Delta \theta_{ij})^2e^{-\sigma_{\mathrm{ang}}^2}.
+\end{align*}
+Now that we have determined the expected values and variances, let us investigate covariances.
+We begin by determining the covariance of $\Delta \hat{x}_{ij}$ and $\Delta \hat{y}_{ij}$,
+\begin{align*}
+\mathrm{Cov}(\Delta \hat{x}_{ij},\Delta \hat{y}_{ij})=\mathbb{E}(\Delta \hat{x}_{ij}\Delta \hat{y}_{ij})-\mathbb{E}(\Delta \hat{x}_{ij})\mathbb{E}(\Delta \hat{y}_{ij}).
+\end{align*}
+Since we already know the expected values in the second term, we will focus on the first term now.
+\begin{align*}
+\mathbb{E}(\Delta \hat{x}_{ij}\Delta \hat{y}_{ij})&=\mathbb{E}(\Delta \hat{\ell}_{ij}^2\cos(\Delta \hat{\theta}_{ij})\sin(\Delta \hat{\theta}_{ij}))=\mathbb{E}(\Delta \hat{\ell}_{ij}^2)\mathbb{E}(\cos(\Delta \hat{\theta}_{ij})\sin(\Delta \hat{\theta}_{ij}))\\
+&=(\Delta \ell_{ij}^2+\sigma_{\mathrm{pos}}^2)\left(\frac{\sin(2\Delta \theta_{ij})}{2}e^{-2\sigma_{\mathrm{ang}}^2}\right),
+\end{align*}
+where we used \@ref(eq:ExptValCosSin).
+Next, we rewrite the product of the expected values as
+\begin{align*}
+\mathbb{E}(\Delta \hat{x}_{ij})\mathbb{E}(\Delta \hat{y}_{ij})=\Delta \ell_{ij}^2\sin(\Delta \theta_{ij})\cos(\Delta \theta_{ij})e^{-\sigma_{\mathrm{ang}}^2}=e^{-\sigma_{\mathrm{ang}}^2}
+\frac{\Delta \ell_{ij}^2}{2}\sin(2\Delta \theta_{ij})
+\end{align*}
+to obtain
+\begin{align*}
+	\mathrm{Cov}(\Delta \hat{x}_{ij},\Delta \hat{y}_{ij})=e^{-\sigma_{\mathrm{ang}}^2}\frac{\sin(2\Delta \theta_{ij})}{2}\left((\Delta \ell_{ij}^2+\sigma_{\mathrm{pos}}^2)e^{-\sigma_{\mathrm{ang}}^2}-\Delta \ell_{ij}^2\right).
+\end{align*}
+Finally, we calculate the covariance between $\Delta \hat{x}_{ij}$ and $\Delta \hat{\theta}_{ij}$.
+\begin{align*}
+\mathrm{Cov}(\Delta \hat{x}_{ij}, \hat{\theta}_{ij})&=\mathbb{E}(\Delta \hat{x}_{ij} \Delta \hat{\theta}_{ij})-\mathbb{E}(\Delta \hat{x}_{ij})\mathbb{E}(\Delta \hat{\theta}_{ij})\\
+&=\mathbb{E}(\Delta \hat{x}_{ij}\Delta \hat{\theta}_{ij})-\Delta \ell_{ij}\cos(\Delta \theta_{ij})e^{-\frac{1}{2}\sigma_{\mathrm{ang}}^2}\Delta \theta_{ij}.
+\end{align*}
+Next, the expected value of the first part of the above equation is given by
+\begin{align*}
+\mathbb{E}(\Delta \hat{x}_{ij} \Delta \hat{\theta}_{ij})&=\mathbb{E}(\Delta \hat{\ell}_{ij}\cos(\Delta \hat{\theta}_{ij})\Delta \hat{\theta}_{ij})=\Delta \ell_{ij}\mathbb{E}(\cos(\Delta \theta_{ij}+\tilde{\theta})(\Delta \theta_{ij}+\tilde{\theta}))\\
+&= \Delta \ell_{ij}(\mathbb{E}(\cos(\Delta \theta_{ij}+\tilde{\theta}))\Delta \theta_{ij}+\mathbb{E}(\cos(\Delta \theta_{ij}+\tilde{\theta})\tilde{\theta}))\\
+&= \Delta \ell_{ij}(\mathbb{E}(\cos(\Delta \theta_{ij})\cos(\tilde{\theta})-\sin(\Delta \theta_{ij})\sin(\tilde{\theta}))\Delta \theta_{ij}+\mathbb{E}(\cos(\Delta \theta_{ij}+\tilde{\theta})\tilde{\theta}))\\
+&=\Delta \ell_{ij}(\cos(\Delta \theta_{ij})e^{-\frac{1}{2}\sigma_{\mathrm{ang}}^2}\Delta \theta_{ij}+\mathbb{E}(\cos(\Delta \theta_{ij}+\tilde{\theta})\tilde{\theta})).
+\end{align*}
+The last term can be expanded as follows
+\begin{align*}
+\mathbb{E}(\cos(\Delta \theta_{ij}+\tilde{\theta})\tilde{\theta}))&=\mathbb{E}\left((\cos(\Delta \theta_{ij})\cos(\tilde{\theta})-\sin(\Delta \theta_{ij})\sin(\tilde{\theta}))\tilde{\theta}\right)\\
+&=\cos(\Delta \theta_{ij})\mathbb{E}(\cos(\tilde{\theta})\tilde{\theta})-\sin(\Delta \theta_{ij})\mathbb{E}(\sin(\tilde{\theta})\tilde{\theta})\\
+&=-\sin(\Delta \theta_{ij})\sigma_{\mathrm{ang}}^2e^{-\frac{1}{2}\sigma_{\mathrm{ang}}^2},
+\end{align*}
+where we used \@ref(eq:ExpValCosX) and \@ref(eq:ExpValSinX), such that
+\begin{align*}
+\mathrm{Cov}(\Delta \hat{x}_{ij} \Delta \hat{\theta}_{ij})&=\Delta \ell_{ij}\left(\cos(\Delta \theta_{ij})e^{-\frac{1}{2}\sigma_{\mathrm{ang}}^2}\Delta \theta_{ij}-\sin(\Delta \theta_{ij})\sigma_{\mathrm{ang}}^2e^{-\frac{1}{2}\sigma_{\mathrm{ang}}^2}\right)-\Delta \ell_{ij}\cos(\Delta \theta_{ij})e^{-\frac{1}{2}\sigma_{\mathrm{ang}}^2}\Delta \theta_{ij}\\
+&=-\Delta \ell_{ij}\sin(\Delta \theta_{ij})\sigma_{\mathrm{ang}}^2e^{-\frac{1}{2}\sigma_{\mathrm{ang}}^2}.
+\end{align*}
+In a similar fashion, we also obtain
+\begin{align*}
+\mathrm{Cov}(\Delta \hat{y}_{ij},\Delta \hat{\theta}_{ij})=\Delta \ell_{ij}\cos(\Delta \theta_{ij})\sigma_{\mathrm{ang}}^2e^{-\frac{1}{2}\sigma_{\mathrm{ang}}^2}.
+\end{align*}
+
+In summary, the expected value and covariance of $\Delta \hat{x}_{ij}$, $\Delta \hat{y}_{ij}$, and $\Delta \hat{\theta}_{ij}$ are
+\begin{align*}
+\mathbb{E}\left(\begin{bmatrix}
+\Delta \hat{x}_{ij}\\
+\Delta \hat{y}_{ij}\\
+\Delta \hat{\theta}_{ij}
+\end{bmatrix}\right)=\begin{bmatrix}
+\Delta \ell_{ij}\cos(\Delta \theta_{ij})e^{-\frac{1}{2}\sigma_{\mathrm{ang}}^2}\\
+\Delta \ell_{ij}\sin(\Delta \theta_{ij})e^{-\frac{1}{2}\sigma_{\mathrm{ang}}^2}\\
+\Delta \theta_{ij}
+\end{bmatrix}
+\end{align*}
+and
+
+\begin{align*}
+\mathrm{Var}\left(\begin{bmatrix}
+\Delta \hat{x}_{ij}\\
+\Delta \hat{y}_{ij}\\
+\Delta \hat{\theta}_{ij}
+\end{bmatrix}\right)=
+\begin{bmatrix}
+\sigma_{\Delta x}^2 & \sigma_{\Delta x\Delta y} & -\Delta \ell_{ij}\sin(\Delta \theta_{ij})\sigma_{\mathrm{ang}}^2e^{-\frac{1}{2}\sigma_{\mathrm{ang}}^2}\\
+\sigma_{\Delta x\Delta y} & \sigma_{\Delta y}^2 & \Delta \ell_{ij}\cos(\Delta \theta_{ij})\sigma_{\mathrm{ang}}^2e^{-\frac{1}{2}\sigma_{\mathrm{ang}}^2}\\
+-\Delta \ell_{ij}\sin(\Delta \theta_{ij})\sigma_{\mathrm{ang}}^2e^{-\frac{1}{2}\sigma_{\mathrm{ang}}^2} & \Delta \ell_{ij}\cos(\Delta \theta_{ij})\sigma_{\mathrm{ang}}^2e^{-\frac{1}{2}\sigma_{\mathrm{ang}}^2} & \sigma_{\mathrm{ang}}^2
+\end{bmatrix},
+\end{align*}
+respectively,
+where 
+\begin{align*}
+\sigma_{\Delta x}^2&=\frac{(\Delta \ell_{ij}^2+\sigma_{\mathrm{pos}}^2)}{2}\left(1+\cos(2\Delta \theta_{ij})e^{-2\sigma_{\mathrm{ang}}^2}\right)-\Delta \ell_{ij}^2\cos(\Delta \theta_{ij})^2e^{-\sigma_{\mathrm{ang}}^2}\\
+\sigma_{\Delta y}^2&=\frac{(\Delta \ell_{ij}^2+\sigma_{\mathrm{pos}}^2)}{2}\left(1-\cos(2\Delta \theta_{ij})e^{-2\sigma_{\mathrm{ang}}^2}\right)-\Delta \ell_{ij}^2\sin(\Delta \theta_{ij})^2e^{-\sigma_{\mathrm{ang}}^2}.
+\end{align*}
+and
+\begin{align*}
+\sigma_{\Delta x\Delta y}=e^{-\sigma_{\mathrm{ang}}^2}\frac{\sin(2\Delta \theta_{ij})}{2}\left((\Delta \ell_{ij}^2+\sigma_{\mathrm{pos}}^2)e^{-\sigma_{\mathrm{ang}}^2}-\Delta \ell_{ij}^2\right)
+\end{align*}
+
+## Odometry Measurements in _kollagen_
+
+Now that we have derived the expected values and the covariances for the estiamtes of the relative change in position and heading, when only noisy angle and distance measurements are available, let us look at the covariance matrix in \emph{kollagen} specifically.
+In \emph{kollagen}, the true change in angle is limited to four options, i.e., $\Delta \theta_{ij}\in\lbrace -\pi, -\frac{\pi}{2}, 0, \frac{\pi}{2}\rbrace$.
+With these limited options for $\Delta \theta_{ij}$, we observe that $\mathrm{Cov}(\Delta x_{ij},\Delta y_{ij})=0$ because $\sin(2\Delta \theta_{ij})=0$ for $\Delta \theta_{ij}\in\lbrace -\pi, -\frac{\pi}{2}, 0, \frac{\pi}{2}\rbrace$.
+
+Next, we will distinguish two cases:
+
+1. $\Delta \theta_{ij}\in \lbrace -\pi, 0\rbrace$
+
+   In this case, the agent continues in either the same or the opposite
+   direction of its current heading.
+   This simplifies the expected value and variance as follows
+   \begin{equation*}
+   \mathbb{E}\left(\begin{bmatrix}
+   \Delta \hat{x}_{ij}\\
+   \Delta \hat{y}_{ij}\\
+   \Delta \hat{\theta}_{ij}
+   \end{bmatrix}\right)=\begin{bmatrix}
+   (-1)^{n}\Delta \ell_{ij}e^{-\frac{1}{2}\sigma_{\mathrm{ang}}^2}\\
+   0\\
+   \Delta \theta_{ij}
+   \end{bmatrix}
+   \end{equation*}
+   and
+   \begin{equation*}
+   \mathrm{Var}\left(\begin{bmatrix}
+   \Delta \hat{x}_{ij}\\
+   \Delta \hat{y}_{ij}\\
+   \Delta \hat{\theta}_{ij}
+   \end{bmatrix}\right)=\begin{bmatrix}
+   \sigma_{\Delta x}^2 & 0 & 0\\
+   0 & \sigma_{\Delta y}^2 & (-1)^{n}\Delta \ell_{ij}\sigma_{\mathrm{ang}}^2e^{-\frac{1}{2}\sigma_{\mathrm{ang}}^2}\\
+   0 & (-1)^{n}\Delta \ell_{ij}\sigma_{\mathrm{ang}}^2e^{-\frac{1}{2}\sigma_{\mathrm{ang}}^2} & \sigma_{\mathrm{ang}}^2
+   \end{bmatrix},
+   \end{equation*}
+   respectively, where
+   \begin{equation*}
+   \sigma_{\Delta x}^2=\frac{(\Delta \ell_{ij}^2+\sigma_{\mathrm{pos}}^2)}{2}(1+e^{-2\sigma_{\mathrm{ang}}^2})-\Delta \ell_{ij}^2e^{-\sigma_{\mathrm{ang}}^2},
+   \end{equation*}
+   \begin{equation*}
+   \sigma_{\Delta y}^2=\frac{(\Delta \ell_{ij}^2+\sigma_{\mathrm{pos}}^2)}{2}(1-e^{-2\sigma_{\mathrm{ang}}^2}),
+   \end{equation*}
+   and
+   \begin{equation}
+   n=\begin{cases}
+   0 & \mathrm{if}\ \Delta \theta_{ij}=0, \\
+   1 & \mathrm{if}\ \Delta \theta_{ij}=-\pi.
+   \end{cases}
+   (\#eq:DefnForwBackCase)
+   \end{equation}
+   Interestingly, the covariance between the heading and the change in $x$
+   position are now uncorrelated, such that the covariance matrix has a block
+   diagonal structure.
+   
+   The information matrix, $I$, in this case is given by
+   \begin{equation*}
+   I=\mathrm{Var}\left(\begin{bmatrix}
+   \Delta \hat{x}_{ij}\\
+   \Delta \hat{y}_{ij}\\
+   \Delta \hat{\theta}_{ij}
+   \end{bmatrix}\right)^{-1}=\begin{bmatrix}
+   \sigma_{\Delta x}^{-2} & 0 & 0\\
+   0 & \frac{\sigma_{\mathrm{ang}}^2}{a} & \frac{(-1)^{n+1}}{a}\Delta \ell_{ij}\sigma_{\mathrm{ang}}^2e^{-\frac{1}{2}\sigma_{\mathrm{ang}}^2}\\
+   0 & \frac{(-1)^{n+1}}{a}\Delta \ell_{ij}\sigma_{\mathrm{ang}}^2e^{-\frac{1}{2}\sigma_{\mathrm{ang}}^2} & \frac{\sigma_{\Delta y}^2}{a}
+   \end{bmatrix},
+   \end{equation*}
+   where $a=\sigma_{\Delta y}^2\sigma_{\mathrm{ang}}^2-\Delta
+   \ell_{ij}^2\sigma_{\mathrm{ang}}^4e^{-\sigma_{\mathrm{ang}}^2}$ and $n$ is
+   defined as in \@ref(eq:DefnForwBackCase).
+
+2. $\Delta \theta_{ij}\in \lbrace -\frac{\pi}{2}, \frac{\pi}{2}\rbrace$
+
+   In this case, the agent turns either left or right from its current heading.
+   This results in the following expected value and variance
+   \begin{align*}
+   \mathbb{E}\left(\begin{bmatrix}
+   \Delta \hat{x}_{ij}\\
+   \Delta \hat{y}_{ij}\\
+   \Delta \hat{\theta}_{ij}
+   \end{bmatrix}\right)=\begin{bmatrix}
+   0\\
+   (-1)^{n}\Delta \ell_{ij}e^{-\frac{1}{2}\sigma_{\mathrm{ang}}^2}\\
+   \Delta \theta_{ij}
+   \end{bmatrix}
+   \end{align*}
+   and
+   \begin{align*}
+   \mathrm{Var}\left(\begin{bmatrix}
+   \Delta \hat{x}_{ij}\\
+   \Delta \hat{y}_{ij}\\
+   \Delta \hat{\theta}_{ij}
+   \end{bmatrix}\right)=\begin{bmatrix}
+   \sigma_{\Delta x}^2 & 0 & (-1)^{n+1}\Delta \ell_{ij}\sigma_{\mathrm{ang}}^2e^{-\frac{1}{2}\sigma_{\mathrm{ang}}^2}\\
+   0 & \sigma_{\Delta y}^2 & 0\\
+   (-1)^{n+1}\Delta \ell_{ij}\sigma_{\mathrm{ang}}^2e^{-\frac{1}{2}\sigma_{\mathrm{ang}}^2} & 0 & \sigma_{\mathrm{ang}}^2
+   \end{bmatrix},
+   \end{align*}
+   respectively, where 
+   \begin{align*}
+   \sigma_{\Delta x}^2=\frac{(\Delta \ell_{ij}^2+\sigma_{\mathrm{pos}}^2)}{2}(1-e^{-2\sigma_{\mathrm{ang}}^2}),
+   \end{align*}
+   \begin{align*}
+   \sigma_{\Delta y}^2=\frac{(\Delta \ell_{ij}^2+\sigma_{\mathrm{pos}}^2)}{2}(1+e^{-2\sigma_{\mathrm{ang}}^2})-\Delta \ell_{ij}^2e^{-\sigma_{\mathrm{ang}}^2},
+   \end{align*}
+   and 
+   \begin{align}
+   (\#eq:DefnForLeftRightCase)
+   n=\begin{cases}
+   0 & \mathrm{if}\ \Delta \theta_{ij}=\frac{\pi}{2}, \\
+   1 & \mathrm{if}\ \Delta \theta_{ij}=-\frac{\pi}{2}.
+   \end{cases}
+   \end{align}
+   Similar to the previous case, we have a block diagonal structure and now the
+   change in $y$ position and the heading are uncorrelated.
+   
+   The information matrix, $I$, in this case is given by
+   \begin{align*}
+   I=\mathrm{Var}\left(\begin{bmatrix}
+   \Delta \hat{x}_{ij}\\
+   \Delta \hat{y}_{ij}\\
+   \Delta \hat{\theta}_{ij}
+   \end{bmatrix}\right)^{-1}=\begin{bmatrix}
+   \frac{\sigma_{\mathrm{ang}}^2}{b} & 0 & \frac{(-1)^{n}}{b}\Delta \ell_{ij}\sigma_{\mathrm{ang}}^2e^{-\frac{1}{2}\sigma_{\mathrm{ang}}^2}\\
+   0 & \sigma_{\Delta y}^{-2} & 0\\
+   \frac{(-1)^{n}}{b}\Delta \ell_{ij}\sigma_{\mathrm{ang}}^2e^{-\frac{1}{2}\sigma_{\mathrm{ang}}^2} & 0 & \frac{\sigma_{\Delta x}^2}{b}
+   \end{bmatrix},
+   \end{align*}
+   where $b=\sigma_{\Delta x}^2\sigma_{\mathrm{ang}}^2-\Delta
+   \ell_{ij}^2\sigma_{\mathrm{ang}}^4e^{-\sigma_{\mathrm{ang}}^2}$ and $n$ is
+   defined as in \@ref(eq:DefnForLeftRightCase).
+
+# (APPENDIX) Appendix {-}
+
+# Useful Formulas
+
+In this appendix, we will present several formulas that are used in the derivation of the results of Section \@ref(OdomMeasurements).
+
+For an integer $p$, the factorial and double factorial are denoted as $p!=\prod_{i=1}^n i$ and $p!!=\prod_{i=0}^{\left\lceil \frac{n}{2}\right\rceil-1}(n-2i)$, respectively.
+Furthermore, we use $0!=0!!=(-1)!!=1$ and one can also turn a factorial into a product of two double factorials as follows
+\begin{align}
+(\#eq:Fac2DoubleFac)
+p!=p!!(p-1)!!.
+\end{align}
+Furthermore, we have the following identities. 
+Let $p=2n-1$, where $n$ is a non-negative integer, such that
+\begin{align}
+(\#eq:DoubleFacOdd)
+p!!=(2n-1)!!=\frac{2n!}{2^n n!}.
+\end{align}
+and if $p=2n$ we have
+\begin{align}
+(\#eq:DoubleFacEven)
+p!!=(2n)!!=2^nn!.
+\end{align}
+
+
+Assume $X\sim\mathcal{N}(\mu, \sigma^2)$, then the central moments are given by
+\begin{align}
+(\#eq:CentralMomentGaussian)
+\mathbb{E}((X-\mu)^p)=\begin{cases}
+0 &\mathrm{if}\ p\ \mathrm{is\ odd},\\
+\sigma^p(p-1)!! &\mathrm{if}\ p\ \mathrm{is\ even}.
+\end{cases}
+\end{align}
+
+Next, we assume that $\mu=0$ and we will look into the properties of trigonometric functions of zero mean Gaussian variables
+\begin{align}
+(\#eq:ExptSine)
+\mathbb{E}(\sin(X))=\mathbb{E}\left(\sum_{n=0}^{\infty}\frac{(-1)^n}{(2n+1)!}X^{2n+1}\right)=\sum_{n=0}^{\infty}\frac{(-1)^n}{(2n+1)!}\mathbb{E}(X^{2n+1})=0,
+\end{align}
+where we used \@ref(eq:CentralMomentGaussian) for odd exponents.
+Similarly, we can derive the expected value of cosine of a Gaussian variable
+\begin{equation}
+\begin{aligned}
+\mathbb{E}(\cos(X))&=\mathbb{E}\left(\sum_{n=0}^{\infty}\frac{(-1)^n}{(2n)!}X^{2n}\right)=\sum_{n=0}^{\infty}\frac{(-1)^n}{(2n)!}\mathbb{E}(X^{2n})=\sum_{n=0}^{\infty}\frac{(-1)^n}{(2n)!}\sigma^{2n}(2n-1)!! \\
+&=\sum_{n=0}^{\infty}\frac{(-1)^n}{(2n)!}\sigma^{2n}\frac{(2n)!}{2^n n!}=\sum_{n=0}^{\infty}\frac{(-1)^n}{2^n n!}\sigma^{2n}=e^{-\frac{1}{2}\sigma^2},
+\end{aligned}
+(\#eq:ExptCos)
+\end{equation}
+where we used \@ref(eq:CentralMomentGaussian) for even exponents and \@ref(eq:DoubleFacOdd).
+
+With the expected value of the sine and cosine, we determine now the expected value of the product of a sine and cosine function of a Gaussian variable
+\begin{equation}
+(\#eq:ExptValCosSin)
+\begin{aligned}
+\mathbb{E}\left(\cos(\mu+X)\sin(\mu+X)\right)&=\mathbb{E}\left(\frac{\sin(2\mu+2X)}{2}\right),\\
+&=\mathbb{E}\left(\frac{\sin(2\mu)\cos(2X)+\cos(2\mu)\sin(2X)}{2}\right),\\
+&=\frac{\sin(2\mu)}{2}e^{-2\sigma^2},
+\end{aligned}
+\end{equation}
+where $\mu$ is a deterministic variable.
+
+Next, we look at the expected value of the product of sine of a random variable and the random variable itself
+\begin{equation}
+\begin{aligned}
+\mathbb{E}(\sin(X)X)&=\mathbb{E}\left(\sum_{n=0}^{\infty}\frac{(-1)^n}{(2n+1)!}X^{2n+1}X\right)=\sum_{n=0}^{\infty}\frac{(-1)^n}{(2n+1)!}\mathbb{E}(X^{2n+2}) \\
+&=\sum_{n=0}^{\infty}\frac{(-1)^n}{(2n+1)!}\sigma^{2n+2}(2n+1)!!=\sum_{n=0}^{\infty}\frac{(-1)^n}{(2n+1)!!(2n!!)}\sigma^{2n+2}(2n+1)!! \\
+&=\sigma^2\sum_{n=0}^{\infty}\frac{(-1)^n}{(2n!!)}\sigma^{2n}=\sigma^2\sum_{n=0}^{\infty}\frac{(-1)^n}{2^n2n!}\sigma^{2n}=\sigma^2e^{-\frac{1}{2}\sigma^2},
+\end{aligned}
+(\#eq:ExpValSinX)
+\end{equation}
+where we used \@ref(eq:CentralMomentGaussian), \@ref(eq:Fac2DoubleFac), and \@ref(eq:DoubleFacEven). 
+Similarly, we obtain
+\begin{align}
+(\#eq:ExpValCosX)
+\mathbb{E}(\cos(X)X)&=\mathbb{E}\left(\sum_{n=0}^{\infty}\frac{(-1)^n}{(2n)!}X^{2n}X\right)=\sum_{n=0}^{\infty}\frac{(-1)^n}{(2n)!}\mathbb{E}(X^{2n+1})=0,
+\end{align}
+where we used \@ref(eq:CentralMomentGaussian).
+
+Finally, we will investigate the expected value of the squared sine and cosine of a Gaussian random variable,
+\begin{equation}
+\begin{aligned}
+\mathbb{E}(\cos(\mu+X)^2)&=\mathbb{E}\left(\frac{1}{2}+\frac{\cos(2\mu+2X)}{2}\right)=\frac{1}{2}+\mathbb{E}\left(\frac{\cos(2\mu+2X)}{2}\right) \\
+&=\frac{1}{2}+\mathbb{E}\left(\frac{\cos(2\mu)\cos(2X)-\sin(2\mu)\sin(2X)}{2}\right)=\frac{1}{2}+\frac{\cos(2\mu)}{2}e^{-2\sigma^2},
+\end{aligned}
+(\#eq:ExptValCosSquared)
+\end{equation}
+where we used \@ref(eq:ExptSine) and \@ref(eq:ExptCos).
+With the same logic, for the sine we obtain
+\begin{align}
+(\#eq:ExptValSinSquared)
+\mathbb{E}(\sin(\mu+X)^2)&=\mathbb{E}\left(\frac{1}{2}-\frac{\cos(2\mu+2X)}{2}\right)=\frac{1}{2}-\frac{\cos(2\mu)}{2}e^{-2\sigma^2}.
+\end{align}

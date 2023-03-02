@@ -193,8 +193,8 @@ cython_debug/
 #.idea/
 
 compile_commands.json
+/generate
 
 *.bin
 
-# Don't track symlink
-/generate
+.vscode

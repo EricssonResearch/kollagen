@@ -6,7 +6,7 @@
 
 #include "kollagen.h"
 
-class MockWalker : public Walker {
+class MockWalker : public kollagen::Walker {
 public:
   virtual ~MockWalker() = default;
   using Walker::Walker;
@@ -56,10 +56,10 @@ protected:
     inter_params.sigma_pos = 0.0;
     inter_params.sigma_ang = 0.0;
   }
-  WalkerParams walker_params1{0, 0, 0, 1.0, 0.1, 0.1, 1, 0, 1, 1.0, 1.0, 1.0};
-  WalkerParams walker_params2{-1, 2, 0, 1.0, 0.1, 0.1, 1, 1, 2, 1.0, 1.0, 1.0};
-  WalkerParams walker_params3{0, 0, 0, 1.0, 0.1, 0.1, 1, 2, 1, 1.0, 1.0, 1.0};
-  WalkerParams walker_params4{0.2, -0.2, 0.5*M_PI, 0.2, 0.1, 0.1, 2, 2, 1, 1.0, 1.0, 1.0};
+  kollagen::WalkerParams walker_params1{0, 0, 0, 1.0, 0.1, 0.1, 1, 0, 1, 1.0, 1.0, 1.0};
+  kollagen::WalkerParams walker_params2{-1, 2, 0, 1.0, 0.1, 0.1, 1, 1, 2, 1.0, 1.0, 1.0};
+  kollagen::WalkerParams walker_params3{0, 0, 0, 1.0, 0.1, 0.1, 1, 2, 1, 1.0, 1.0, 1.0};
+  kollagen::WalkerParams walker_params4{0.2, -0.2, 0.5*M_PI, 0.2, 0.1, 0.1, 2, 2, 1, 1.0, 1.0, 1.0};
 
   MockWalker walker =
       MockWalker(walker_params1);
@@ -72,8 +72,8 @@ protected:
   MockWalker walker_4 =
       MockWalker(walker_params4);
 
-  LCParams params = LCParams();
-  InterLCParams inter_params = InterLCParams();
+  kollagen::LCParams params = kollagen::LCParams();
+  kollagen::InterLCParams inter_params = kollagen::InterLCParams();
 };
 
 TEST(TestWalker, testNormalizeAngle) {
@@ -85,19 +85,19 @@ TEST(TestWalker, testNormalizeAngle) {
       { 3*0.5*M_PI,-0.5*M_PI},
       {2 * M_PI, 0.0}, {3 * M_PI, -M_PI}, {4 * M_PI, 0.0}};
   for (const auto &equality : equalities) {
-    EXPECT_DOUBLE_EQ(normalize_angle(equality.at(0)), equality.at(1));
+    EXPECT_DOUBLE_EQ(kollagen::normalize_angle(equality.at(0)), equality.at(1));
   }
 }
 
 TEST_F(MockWalkerTest, testParams){
-  EXPECT_TRUE(walker_params1 == Walker(walker_params1).Params());
-  EXPECT_TRUE(walker_params2 == Walker(walker_params2).Params());
-  EXPECT_TRUE(walker_params3 == Walker(walker_params3).Params());
-  EXPECT_TRUE(walker_params4 == Walker(walker_params4).Params());
+  EXPECT_TRUE(walker_params1 == kollagen::Walker(walker_params1).Params());
+  EXPECT_TRUE(walker_params2 == kollagen::Walker(walker_params2).Params());
+  EXPECT_TRUE(walker_params3 == kollagen::Walker(walker_params3).Params());
+  EXPECT_TRUE(walker_params4 == kollagen::Walker(walker_params4).Params());
 
-  EXPECT_TRUE(walker_params1 != Walker(walker_params2).Params());
-  EXPECT_TRUE(walker_params1 != Walker(walker_params3).Params());
-  EXPECT_TRUE(walker_params1 != Walker(walker_params4).Params());
+  EXPECT_TRUE(walker_params1 != kollagen::Walker(walker_params2).Params());
+  EXPECT_TRUE(walker_params1 != kollagen::Walker(walker_params3).Params());
+  EXPECT_TRUE(walker_params1 != kollagen::Walker(walker_params4).Params());
 }
 
 
@@ -192,13 +192,13 @@ TEST_F(MockWalkerTest, testOdometry2) {
   }
 };
 
-void sort_LC_ascending(std::vector<Loopclosure> &vector) {
+void sort_LC_ascending(std::vector<kollagen::Loopclosure> &vector) {
   std::stable_sort(
       vector.begin(), vector.end(),
-      [](Loopclosure lc1, Loopclosure lc2) { return lc1.to < lc2.to; });
+      [](kollagen::Loopclosure lc1, kollagen::Loopclosure lc2) { return lc1.to < lc2.to; });
   std::stable_sort(
       vector.begin(), vector.end(),
-      [](Loopclosure lc1, Loopclosure lc2) { return lc1.from < lc2.from; });
+      [](kollagen::Loopclosure lc1, kollagen::Loopclosure lc2) { return lc1.from < lc2.from; });
 }
 
 TEST_F(MockWalkerTest, testSingleAgentLoopClosure) {
@@ -208,14 +208,14 @@ TEST_F(MockWalkerTest, testSingleAgentLoopClosure) {
 
   sort_LC_ascending(LC);
 
-  std::vector<Loopclosure> expected_LC{
-      Loopclosure(0, 2, 1.0, -1.0, -0.5 * M_PI, 10000, 10000, 1000000),
-      Loopclosure(0, 6, 1.0, 1.0, 0.5 * M_PI, 10000, 10000, 1000000),
-      Loopclosure(1, 3, 1.0, -1.0, 0.0, 10000, 10000, 1000000),
-      Loopclosure(1, 5, 0.0, 0.0, -M_PI, 10000, 10000, 1000000),
-      Loopclosure(2, 4, -1.0, 1.0, -M_PI, 10000, 10000, 1000000),
-      Loopclosure(3, 5, -1.0, 1.0, -M_PI, 10000, 10000, 1000000),
-      Loopclosure(4, 6, 1.0, 1.0, 0.0, 10000, 10000, 1000000)};
+  std::vector<kollagen::Loopclosure> expected_LC{
+      kollagen::Loopclosure(0, 2, 1.0, -1.0, -0.5 * M_PI, 10000, 10000, 1000000),
+      kollagen::Loopclosure(0, 6, 1.0, 1.0, 0.5 * M_PI, 10000, 10000, 1000000),
+      kollagen::Loopclosure(1, 3, 1.0, -1.0, 0.0, 10000, 10000, 1000000),
+      kollagen::Loopclosure(1, 5, 0.0, 0.0, -M_PI, 10000, 10000, 1000000),
+      kollagen::Loopclosure(2, 4, -1.0, 1.0, -M_PI, 10000, 10000, 1000000),
+      kollagen::Loopclosure(3, 5, -1.0, 1.0, -M_PI, 10000, 10000, 1000000),
+      kollagen::Loopclosure(4, 6, 1.0, 1.0, 0.0, 10000, 10000, 1000000)};
 
   sort_LC_ascending(expected_LC);
 
@@ -248,35 +248,35 @@ std::vector<std::string> get_text_file_as_string_vector(const std::string& filen
   return result;
 }
 
-void assert_circles_equal(const DiscreteCircle &circle,
-                          std::vector<Point> expected) {
+void assert_circles_equal(const kollagen::DiscreteCircle &circle,
+                          std::vector<kollagen::Point> expected) {
   auto coordinates = circle.coordinates();
   ASSERT_TRUE(std::is_permutation(coordinates.begin(), coordinates.end(),
                                   expected.begin()));
 }
 
-void sort_multi_LC_ascending(std::vector<MultiLoopclosure> &vector) {
+void sort_multi_LC_ascending(std::vector<kollagen::MultiLoopclosure> &vector) {
   std::stable_sort(vector.begin(), vector.end(),
-                   [](MultiLoopclosure lc1, MultiLoopclosure lc2) {
+                   [](kollagen::MultiLoopclosure lc1, kollagen::MultiLoopclosure lc2) {
                      return lc1.to < lc2.to;
                    });
   std::stable_sort(vector.begin(), vector.end(),
-                   [](MultiLoopclosure lc1, MultiLoopclosure lc2) {
+                   [](kollagen::MultiLoopclosure lc1, kollagen::MultiLoopclosure lc2) {
                      return lc1.from < lc2.from;
                    });
   std::stable_sort(vector.begin(), vector.end(),
-                   [](MultiLoopclosure lc1, MultiLoopclosure lc2) {
+                   [](kollagen::MultiLoopclosure lc1, kollagen::MultiLoopclosure lc2) {
                      return lc1.ID2 < lc2.ID2;
                    });
   std::stable_sort(vector.begin(), vector.end(),
-                   [](MultiLoopclosure lc1, MultiLoopclosure lc2) {
+                   [](kollagen::MultiLoopclosure lc1, kollagen::MultiLoopclosure lc2) {
                      return lc1.ID1 < lc2.ID1;
                    });
 }
 
 TEST_F(MockWalkerTest, testInterAgentLoopclosure) {
-  std::vector<MultiLoopclosure> LCs = inter_agent_loopclose(
-      walker, walker2, inter_params, [](Point p, InterLCParams param) {
+  std::vector<kollagen::MultiLoopclosure> LCs = inter_agent_loopclose(
+      walker, walker2, inter_params, [](kollagen::Point p, kollagen::InterLCParams param) {
         (void)p;
         return 1.0 / param.prob_scale;
       });
@@ -285,29 +285,29 @@ TEST_F(MockWalkerTest, testInterAgentLoopclosure) {
 
   sort_multi_LC_ascending(LCs);
 
-  std::vector<MultiLoopclosure> expected_LCs{
-      MultiLoopclosure(2, 1, 0, 7, 2.0, 0.0, 0.5 * M_PI, 10000, 10000, 1000000),
-      MultiLoopclosure(2, 1, 1, 0, 0.0, -2.0, 0.0 * M_PI, 10000, 10000,
+  std::vector<kollagen::MultiLoopclosure> expected_LCs{
+      kollagen::MultiLoopclosure(2, 1, 0, 7, 2.0, 0.0, 0.5 * M_PI, 10000, 10000, 1000000),
+      kollagen::MultiLoopclosure(2, 1, 1, 0, 0.0, -2.0, 0.0 * M_PI, 10000, 10000,
                        1000000),
-      MultiLoopclosure(2, 1, 1, 6, 1.0, -1.0, 0.5 * M_PI, 10000, 10000,
+      kollagen::MultiLoopclosure(2, 1, 1, 6, 1.0, -1.0, 0.5 * M_PI, 10000, 10000,
                        1000000),
-      MultiLoopclosure(2, 1, 1, 7, 1.0, 0.0, 0.5 * M_PI, 10000, 10000, 1000000),
-      MultiLoopclosure(2, 1, 1, 8, 1.0, 1.0, 0.5 * M_PI, 10000, 10000, 1000000),
-      MultiLoopclosure(2, 1, 2, 5, 0.0, -2.0, -1.0 * M_PI, 10000, 10000,
+      kollagen::MultiLoopclosure(2, 1, 1, 7, 1.0, 0.0, 0.5 * M_PI, 10000, 10000, 1000000),
+      kollagen::MultiLoopclosure(2, 1, 1, 8, 1.0, 1.0, 0.5 * M_PI, 10000, 10000, 1000000),
+      kollagen::MultiLoopclosure(2, 1, 2, 5, 0.0, -2.0, -1.0 * M_PI, 10000, 10000,
                        1000000),
-      MultiLoopclosure(2, 1, 2, 6, 0.0, -1.0, 0.5 * M_PI, 10000, 10000,
+      kollagen::MultiLoopclosure(2, 1, 2, 6, 0.0, -1.0, 0.5 * M_PI, 10000, 10000,
                        1000000),
-      MultiLoopclosure(2, 1, 2, 7, 0.0, 0.0, 0.5 * M_PI, 10000, 10000, 1000000),
-      MultiLoopclosure(2, 1, 2, 8, 0.0, 1.0, 0.5 * M_PI, 10000, 10000, 1000000),
-      MultiLoopclosure(2, 1, 3, 4, 0.0, -2.0, 0.5 * M_PI, 10000, 10000,
+      kollagen::MultiLoopclosure(2, 1, 2, 7, 0.0, 0.0, 0.5 * M_PI, 10000, 10000, 1000000),
+      kollagen::MultiLoopclosure(2, 1, 2, 8, 0.0, 1.0, 0.5 * M_PI, 10000, 10000, 1000000),
+      kollagen::MultiLoopclosure(2, 1, 3, 4, 0.0, -2.0, 0.5 * M_PI, 10000, 10000,
                        1000000),
-      MultiLoopclosure(2, 1, 3, 6, -1.0, -1.0, 0.5 * M_PI, 10000, 10000,
+      kollagen::MultiLoopclosure(2, 1, 3, 6, -1.0, -1.0, 0.5 * M_PI, 10000, 10000,
                        1000000),
-      MultiLoopclosure(2, 1, 3, 7, -1.0, 0.0, 0.5 * M_PI, 10000, 10000,
+      kollagen::MultiLoopclosure(2, 1, 3, 7, -1.0, 0.0, 0.5 * M_PI, 10000, 10000,
                        1000000),
-      MultiLoopclosure(2, 1, 3, 8, -1.0, 1.0, 0.5 * M_PI, 10000, 10000,
+      kollagen::MultiLoopclosure(2, 1, 3, 8, -1.0, 1.0, 0.5 * M_PI, 10000, 10000,
                        1000000),
-      MultiLoopclosure(2, 1, 4, 7, -2.0, 0.0, 0.5 * M_PI, 10000, 10000,
+      kollagen::MultiLoopclosure(2, 1, 4, 7, -2.0, 0.0, 0.5 * M_PI, 10000, 10000,
                        1000000)};
 
   sort_multi_LC_ascending(expected_LCs);
@@ -329,38 +329,47 @@ TEST_F(MockWalkerTest, testInterAgentLoopclosure) {
 }
 
 TEST(TestWalker, testDiscreteCircle) {
-  assert_circles_equal(DiscreteCircle(0), std::vector<Point>({Point(0, 0)}));
+  assert_circles_equal(kollagen::DiscreteCircle(0), std::vector<kollagen::Point>({kollagen::Point(0, 0)}));
 
   assert_circles_equal(
-      DiscreteCircle(1),
-      std::vector<Point>(
-          {Point(0, 0), Point(1, 0), Point(0, 1), Point(-1, 0), Point(0, -1)}));
+      kollagen::DiscreteCircle(1),
+      std::vector<kollagen::Point>(
+          {kollagen::Point(0, 0), kollagen::Point(1, 0), kollagen::Point(0, 1), kollagen::Point(-1, 0), kollagen::Point(0, -1)}));
 
   assert_circles_equal(
-      DiscreteCircle(2),
-      std::vector<Point>({Point(0, 0), Point(1, 0), Point(0, 1), Point(-1, 0),
-                          Point(0, -1), Point(-2, 0), Point(0, -2), Point(2, 0),
-                          Point(0, 2), Point(-1, 1), Point(1, -1), Point(1, 1),
-                          Point(-1, -1)}));
+      kollagen::DiscreteCircle(2),
+      std::vector<kollagen::Point>(
+          {kollagen::Point(0, 0), kollagen::Point(1, 0), kollagen::Point(0, 1),
+           kollagen::Point(-1, 0), kollagen::Point(0, -1),
+           kollagen::Point(-2, 0), kollagen::Point(0, -2),
+           kollagen::Point(2, 0), kollagen::Point(0, 2), kollagen::Point(-1, 1),
+           kollagen::Point(1, -1), kollagen::Point(1, 1),
+           kollagen::Point(-1, -1)}));
 
-  assert_circles_equal(
-      DiscreteCircle(3),
-      std::vector<Point>(
-          {Point(-2, -2), Point(-1, -2), Point(0, -2),  Point(1, -2),
-           Point(2, -2),  Point(-2, -1), Point(-1, -1), Point(0, -1),
-           Point(1, -1),  Point(2, -1),  Point(-2, 0),  Point(-1, 0),
-           Point(0, 0),   Point(1, 0),   Point(2, 0),   Point(-2, 1),
-           Point(-1, 1),  Point(0, 1),   Point(1, 1),   Point(2, 1),
-           Point(-2, 2),  Point(-1, 2),  Point(0, 2),   Point(1, 2),
-           Point(2, 2),   Point(3, 0),   Point(0, 3),   Point(-3, 0),
-           Point(0, -3)}));
+  assert_circles_equal(kollagen::DiscreteCircle(3),
+                       std::vector<kollagen::Point>(
+                           {kollagen::Point(-2, -2), kollagen::Point(-1, -2),
+                            kollagen::Point(0, -2),  kollagen::Point(1, -2),
+                            kollagen::Point(2, -2),  kollagen::Point(-2, -1),
+                            kollagen::Point(-1, -1), kollagen::Point(0, -1),
+                            kollagen::Point(1, -1),  kollagen::Point(2, -1),
+                            kollagen::Point(-2, 0),  kollagen::Point(-1, 0),
+                            kollagen::Point(0, 0),   kollagen::Point(1, 0),
+                            kollagen::Point(2, 0),   kollagen::Point(-2, 1),
+                            kollagen::Point(-1, 1),  kollagen::Point(0, 1),
+                            kollagen::Point(1, 1),   kollagen::Point(2, 1),
+                            kollagen::Point(-2, 2),  kollagen::Point(-1, 2),
+                            kollagen::Point(0, 2),   kollagen::Point(1, 2),
+                            kollagen::Point(2, 2),   kollagen::Point(3, 0),
+                            kollagen::Point(0, 3),   kollagen::Point(-3, 0),
+                            kollagen::Point(0, -3)}));
 }
 
 TEST(TestWalker, testPoint) {
-  EXPECT_EQ(Point(1, 2), Point(1, 2));
-  EXPECT_EQ(Point(0, 0), Point(0, 0));
+  EXPECT_EQ(kollagen::Point(1, 2), kollagen::Point(1, 2));
+  EXPECT_EQ(kollagen::Point(0, 0), kollagen::Point(0, 0));
 
-  EXPECT_NE(Point(0, -2), Point(0, 2));
+  EXPECT_NE(kollagen::Point(0, -2), kollagen::Point(0, 2));
 }
 
 TEST_F(MockWalkerTest, testCenterOfMass) {
@@ -413,7 +422,7 @@ TEST_F(MockWalkerTest, testCenterOfMass) {
 }
 
 TEST_F(MockWalkerTest, testTranslate) {
-  walker.translate(Point(1, 2));
+  walker.translate(kollagen::Point(1, 2));
 
   {
     std::vector<double> expected_x{1, 2, 2, 3, 3, 2, 2, 2, 2};
@@ -426,7 +435,7 @@ TEST_F(MockWalkerTest, testTranslate) {
     }
   }
 
-  walker.translate(Point(-1, -2));
+  walker.translate(kollagen::Point(-1, -2));
 
   {
     std::vector<double> expected_x{0, 1, 1, 2, 2, 1, 1, 1, 1};
@@ -440,7 +449,7 @@ TEST_F(MockWalkerTest, testTranslate) {
     }
   }
 
-  walker.translate(Point(0, 0));
+  walker.translate(kollagen::Point(0, 0));
   {
     std::vector<double> expected_x{0, 1, 1, 2, 2, 1, 1, 1, 1};
     std::vector<double> expected_y{0, 0, -1, -1, 0, 0, 1, 2, 3};

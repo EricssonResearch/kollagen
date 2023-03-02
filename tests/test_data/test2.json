@@ -2,6 +2,7 @@
     "number_of_steps": 1000,
     "align": true,
     "number_of_agents": 2,
+    "exact_information_matrix": false,
     "agent_parameters": {
         "stepsize": 1.5,
         "step_fragment": 2,

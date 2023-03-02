@@ -2,11 +2,14 @@
 
 A Collaborative SLAM Pose Graph Generator
 
-This is a header-only data generator library which generates multi-agent
-pose graphs.
+This is a header-only data generator library which generates multi-agent,
+M3500esque pose-graphs with both intra-agent and inter-agent loop-closures.
+It's primary use is within the Collaborative SLAM activity.
 
-⚠️ __NB:__ Some of the announced features (such as multi-g2o parsing) are
-currently under development
+The package can be used either by interacting directly with the C++ API (see
+[example.cpp](src/example.cpp) and [iSAM2example.cpp](src/iSAM2example.cpp)) or
+by JSON files &ndash; using either the python pip package, or the
+[generate](src/generate.cpp) binary made available after building.
 
 ## Overview of the generation procedure
 
@@ -56,9 +59,37 @@ There are two types of loop closures in ***kollagen***:
      certain distance based on a probability proportional to the distance
      between the poses.
 
+## pip package
+
+If only interested in generating datasets (be it multig2o or singleg2o) from
+JSON, the provided pip package could be what you are after.
+
+To install, enter the project root, and issue
+
+```bash
+pip3 install .
+```
+
+After this, the CLI command `kollagenr8` should become available. Issue 
+
+```bash
+kollagenr8 --help
+```
+
+for instructions on how to use.
+
+For Windows builds, make sure to have up-to-date versions of MSVC and the
+Windows SDK. See further below for tested versions.
+
+### Troubleshooting
+
+Make sure you have a modern, C++20 compliant, compiler (tested with `clang` 14)
+
 ## Building
 
-The building is tested on Ubuntu 22.04 (Jammy) with Clang 14.
+### Linux
+
+The building has been tested on Ubuntu 22.04 (Jammy) with Clang 14.
 
 ```bash
 # Clone the repository
@@ -66,7 +97,7 @@ git clone https://github.com/EricssonResearch/kollagen.git
 
 # Update aptitude repositories and install debian-package dependencies
 sudo apt update
-sudo apt install cmake clang-14
+sudo apt install cmake clang
 
 # OPTIONAL: Create python virtual environment and install python dependencies for
 # plotting
@@ -80,22 +111,18 @@ pip3 install matplotlib numpy
 mkdir build && cd build
 
 # Configure make-files, setting Clang 14 as compiler
-CC=clang-14 CXX=clang++-14 cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DDATAGEN_ENABLE_TESTS=OFF -DDATAGEN_ENABLE_GTSAM=OFF
+export CC=clang
+export CXX=clang++
+cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DKOLLAGEN_ENABLE_TESTS=OFF -DKOLLAGEN_ENABLE_GTSAM=OFF -DKOLLAGEN_BUILD_EXAMPLES=ON
 
 # Compile
 make -j$(nproc --all)
 ```
 
-To try out the package, run [example.cpp](src/example.cpp) and plot the
-resulting pose graphs:
+### Windows
 
-```bash
-./example
-../python/plot.py example
-```
+Building has been tested with MSVC v143 with Windows 10 SDK 10.0.20348.
 
-### Additional dependencies
+### macOS
 
-For running the tests, `libgtest-dev` and `libgmock-dev` are required.
-For animating using `python/animate.py`, `ffmpeg` is needed. To generate
-documentation `doxygen` is needed.
+Python installation with pip has been testen on macOS Monterey 12.6.2 with clang 14.0.0

@@ -33,14 +33,19 @@ gray5    = "#f2f2f2" # Gray 5
 eriwhite = "#fafafa" # Ericsson White
 white    = "#ffffff" # White
 
-plt.style.use(script_dir+"/"+"ericsson.mplstyle")
+# plt.style.use("ggplot")
+# plt.style.use("seaborn")
+# plt.style.use(script_dir+"/"+"ericsson.mplstyle")
 plt.rcParams["font.size"] = 12
+plt.rcParams["font.monospace"] = "Iosevka"
 plt.rcParams["mathtext.fontset"] = "stix"
+plt.rcParams["font.family"] = "Nimbus Roman"
 plt.rcParams["legend.facecolor"] = "white"
 plt.rcParams["figure.facecolor"] = "white"
 plt.rcParams["savefig.facecolor"] = "None"
 plt.rcParams["patch.edgecolor"] = "k"
 plt.rcParams["svg.fonttype"] = "none"
+plt.rcParams["pdf.fonttype"] = 42
 
 if __name__ == "__main__":
     a1 = [i*1 for i in range(10)]

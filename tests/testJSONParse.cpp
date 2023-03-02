@@ -6,15 +6,15 @@
 class TestJSONParse : public ::testing::Test {
 protected:
   void SetUp() override {
-    test_data = open_json("test_data/test.json");
-    test_data2 = open_json("test_data/test2.json");
+    test_data = kollagen::open_json("test_data/test.json");
+    test_data2 = kollagen::open_json("test_data/test2.json");
   }
-  json test_data;
-  json test_data2;
+  nlohmann::json test_data;
+  nlohmann::json test_data2;
 };
 
 TEST_F(TestJSONParse, testParseAgentParams){
-  auto test = parse_agent_params(test_data);
+  auto test = kollagen::parse_agent_params(test_data);
   EXPECT_EQ(test_data.at("number_of_agents"), test.size());
   for (int i = 0; const auto& agent : test) {
     auto agent_data = test_data.at("agent_parameters").at("agent_specific").at(i);
@@ -32,7 +32,7 @@ TEST_F(TestJSONParse, testParseAgentParams){
 }
 
 TEST_F(TestJSONParse, testParseAgentParams2){
-  auto test = parse_agent_params(test_data2);
+  auto test = kollagen::parse_agent_params(test_data2);
   EXPECT_EQ(test_data2.at("number_of_agents"), test.size());
   for (const auto& agent : test) {
     auto agent_data = test_data2.at("agent_parameters").at("agent_specific").at(0);
@@ -49,7 +49,7 @@ TEST_F(TestJSONParse, testParseAgentParams2){
 }
 
 TEST_F(TestJSONParse, testParseLCParams){
-  auto test = parse_lc_params(test_data);
+  auto test = kollagen::parse_lc_params(test_data);
   for (int i = 0; const auto& lc : test) {
     auto lc_data = test_data.at("agent_parameters").at("agent_specific").at(i);
     EXPECT_EQ(lc_data.at("std_dev_intra_loop_closure_position"), lc.sigma_pos);
@@ -65,7 +65,7 @@ TEST_F(TestJSONParse, testParseLCParams){
 }
 
 TEST_F(TestJSONParse, testParseLCParams2){
-  auto test = parse_lc_params(test_data2);
+  auto test = kollagen::parse_lc_params(test_data2);
   for (const auto& lc : test) {
     auto lc_data = test_data.at("agent_parameters").at("agent_specific").at(0);
     EXPECT_EQ(lc_data.at("std_dev_intra_loop_closure_position"), lc.sigma_pos);
@@ -80,7 +80,7 @@ TEST_F(TestJSONParse, testParseLCParams2){
 }
 
 TEST_F(TestJSONParse, testParseInterLCParams){
-  auto test = parse_inter_lc_params(test_data);
+  auto test = kollagen::parse_inter_lc_params(test_data);
   auto lc_data = test_data.at("inter_agent_loop_closure_parameters");
   EXPECT_EQ(lc_data.at("std_dev_loop_closure_position"), test.sigma_pos);
   EXPECT_EQ(lc_data.at("std_dev_loop_closure_angle"), test.sigma_ang);
@@ -94,7 +94,9 @@ TEST_F(TestJSONParse, testParseInterLCParams){
 }
 
 TEST_F(TestJSONParse, testGetParamsFromJSON){
-  auto test = get_params_from_json(test_data);
+  auto test = kollagen::get_params_from_json(test_data);
   EXPECT_EQ(test_data.at("align"), test.align_center_of_masses);
   EXPECT_EQ(test_data.at("number_of_steps"), test.N_steps);
+  EXPECT_EQ(test_data.at("number_of_agents"), test.N_agents);
+  EXPECT_EQ(test_data.at("exact_information_matrix"), test.exact_information_matrix);
 }

@@ -30,6 +30,8 @@ plt.xlabel("$N_\\mathrm{steps}$")
 plt.ylabel("Time [ms]")
 plt.legend()
 
+plt.savefig("Nsteps.pdf")
+
 plt.figure()
 X2 = []
 Y2 = []
@@ -46,6 +48,12 @@ while OK:
 
 for i in range(0,len(X2)):
     plt.loglog(X2[i],Y2[i],"v--", label="$N_\\mathrm{steps}=%.0e$" % 10**(i+1))
+
+plt.xlabel("$N_\\mathrm{agents}$")
+plt.ylabel("Time [ms]")
+plt.legend()
+
+plt.savefig("Nagents.pdf")
 
 plt.figure()
 X3 = []
@@ -64,8 +72,10 @@ while OK:
 for i in range(0,len(X3)):
     plt.loglog(X3[i],Y3[i],"v--", label="$N_\\mathrm{steps}=%.0e$" % 10**(i+1))
 
-plt.xlabel("$R_\\mathrm{inter} = R_\\mathrm{intra}$")
+plt.xlabel("Radii (inter/intra-agent)")
 plt.ylabel("Time [ms]")
 plt.legend()
+
+plt.savefig("Radius.pdf")
 
 plt.show()

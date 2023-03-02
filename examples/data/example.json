@@ -1,0 +1,91 @@
+{
+    "number_of_steps": 1200,
+    "align": true,
+    "number_of_agents": 5,
+    "exact_information_matrix": false,
+    "agent_parameters": {
+        "stepsize": 1.0,
+        "step_fragment": 4,
+        "allow_retrocession": true,
+        "agent_specific": [{
+            "std_dev_position": 0.023,
+            "std_dev_angle": 0.0023,
+            "estimated_information_position": 1890.359168241966,
+            "estimated_information_angle": 189035.91682419661,
+            "std_dev_intra_loop_closure_position": 0.023,
+            "std_dev_intra_loop_closure_angle": 0.0023,
+            "estimated_information_intra_position": 1890.359168241966,
+            "estimated_information_intra_angle": 189035.91682419661,
+            "intra_loop_closure_radius": 3.0,
+            "random_number_generator_seed": 1406,
+            "same_position_intra_loop_closure_probability": 0.5,
+            "intra_loop_closure_probability_scaling": 0.05
+        },
+        {
+            "std_dev_position": 0.023,
+            "std_dev_angle": 0.0023,
+            "estimated_information_position": 1890.359168241966,
+            "estimated_information_angle": 189035.91682419661,
+            "std_dev_intra_loop_closure_position": 0.023,
+            "std_dev_intra_loop_closure_angle": 0.0023,
+            "estimated_information_intra_position": 1890.359168241966,
+            "estimated_information_intra_angle": 189035.91682419661,
+            "intra_loop_closure_radius": 3.0,
+            "random_number_generator_seed": 1407,
+            "same_position_intra_loop_closure_probability": 0.5,
+            "intra_loop_closure_probability_scaling": 0.05
+        },
+        {
+            "std_dev_position": 0.023,
+            "std_dev_angle": 0.0023,
+            "estimated_information_position": 1890.359168241966,
+            "estimated_information_angle": 189035.91682419661,
+            "std_dev_intra_loop_closure_position": 0.023,
+            "std_dev_intra_loop_closure_angle": 0.0023,
+            "estimated_information_intra_position": 1890.359168241966,
+            "estimated_information_intra_angle": 189035.91682419661,
+            "intra_loop_closure_radius": 3.0,
+            "random_number_generator_seed": 1408,
+            "same_position_intra_loop_closure_probability": 0.5,
+            "intra_loop_closure_probability_scaling": 0.05
+        },
+        {
+            "std_dev_position": 0.023,
+            "std_dev_angle": 0.0023,
+            "estimated_information_position": 1890.359168241966,
+            "estimated_information_angle": 189035.91682419661,
+            "std_dev_intra_loop_closure_position": 0.023,
+            "std_dev_intra_loop_closure_angle": 0.0023,
+            "estimated_information_intra_position": 1890.359168241966,
+            "estimated_information_intra_angle": 189035.91682419661,
+            "intra_loop_closure_radius": 3.0,
+            "random_number_generator_seed": 1409,
+            "same_position_intra_loop_closure_probability": 0.5,
+            "intra_loop_closure_probability_scaling": 0.05
+        },
+        {
+            "std_dev_position": 0.023,
+            "std_dev_angle": 0.0023,
+            "estimated_information_position": 1890.359168241966,
+            "estimated_information_angle": 189035.91682419661,
+            "std_dev_intra_loop_closure_position": 0.023,
+            "std_dev_intra_loop_closure_angle": 0.0023,
+            "estimated_information_intra_position": 1890.359168241966,
+            "estimated_information_intra_angle": 189035.91682419661,
+            "intra_loop_closure_radius": 3.0,
+            "random_number_generator_seed": 1410,
+            "same_position_intra_loop_closure_probability": 0.5,
+            "intra_loop_closure_probability_scaling": 0.05
+        }
+    ]},
+    "inter_agent_loop_closure_parameters": {
+        "std_dev_loop_closure_position": 0.023,
+        "std_dev_loop_closure_angle": 0.0023,
+        "estimated_information_position": 1599.9999999999998,
+        "estimated_information_angle": 1599.9999999999998,
+        "loop_closure_radius": 3.0,
+        "loop_closure_probability_scaling": 0.05,
+        "same_position_loop_closure_probability": 1.0,
+        "random_number_generator_seed": 2708
+    }
+}

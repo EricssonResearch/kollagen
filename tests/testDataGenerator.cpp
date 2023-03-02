@@ -32,21 +32,21 @@ protected:
     inter_lc_params.radius = 1.0;
   }
 
-  WalkerParams walker_params1{};
-  WalkerParams walker_params2;
-  WalkerParams walker_params3;
+  kollagen::WalkerParams walker_params1{};
+  kollagen::WalkerParams walker_params2;
+  kollagen::WalkerParams walker_params3;
 
-  std::vector<WalkerParams> walker_param_vec;
+  std::vector<kollagen::WalkerParams> walker_param_vec;
 
-  LCParams lc_params;
-  std::vector<LCParams> lc_param_vec;
+  kollagen::LCParams lc_params;
+  std::vector<kollagen::LCParams> lc_param_vec;
 
-  InterLCParams inter_lc_params;
+  kollagen::InterLCParams inter_lc_params;
 
-  DataGenerator data_gen;
+  kollagen::DataGenerator data_gen;
 };
 
-bool correct_walker_ids(const DataGenerator& data_gen){
+bool correct_walker_ids(const kollagen::DataGenerator& data_gen){
   auto walkers = data_gen.Walkers();
   std::vector<int> walkers_IDs;
   std::vector<int> correct_IDs;
@@ -63,20 +63,20 @@ TEST_F(TestDataGenerator, testConstructor) {
 }
 
 TEST_F(TestDataGenerator, testConstructor2) {
-  DataGenerator data_gen2 = DataGeneratorAttorney::ConstructDataGenerator(walker_param_vec);
+  kollagen::DataGenerator data_gen2 = kollagen::DataGeneratorAttorney::ConstructDataGenerator(walker_param_vec);
   correct_walker_ids(data_gen2);
   ASSERT_EQ(data_gen2.Walkers().size(), 3);
 }
 
 TEST_F(TestDataGenerator, testConstructor3) {
-  auto a = DataGeneratorAttorney::ConstructDataGenerator(5);
+  auto a = kollagen::DataGeneratorAttorney::ConstructDataGenerator(5);
   correct_walker_ids(a);
   ASSERT_EQ(a.Walkers().size(), 5);
 }
 
 TEST_F(TestDataGenerator, testConstructor4) {
   int number_of_steps = 100;
-  DataGenerator a = DataGeneratorAttorney::ConstructDataGenerator(7, number_of_steps);
+  kollagen::DataGenerator a = kollagen::DataGeneratorAttorney::ConstructDataGenerator(7, number_of_steps);
   correct_walker_ids(a);
   int step_fragment = a.Walkers().at(0).step_fragment();
   int expected_number_of_steps = number_of_steps * step_fragment + 1;
@@ -87,10 +87,10 @@ TEST_F(TestDataGenerator, testConstructor4) {
 }
 
 TEST_F(TestDataGenerator, testAgentParams) {
-  auto agent_params = AgentParams(0.1, 2, 0.3, 0.4, 0.5, 0.6, 4729);
-  auto dg_params = DataGeneratorParams(agent_params, lc_params, inter_lc_params);
+  auto agent_params = kollagen::AgentParams(0.1, 2, 0.3, 0.4, 0.5, 0.6, 4729);
+  auto dg_params = kollagen::DataGeneratorParams(agent_params, lc_params, inter_lc_params);
   dg_params.align_center_of_masses = false;
-  DataGenerator data_gen(dg_params);
+  kollagen::DataGenerator data_gen(dg_params);
   data_gen.generate();
   auto walker_params = data_gen.Walkers().at(0).Params();
   EXPECT_DOUBLE_EQ(walker_params.x, 0);
@@ -108,25 +108,25 @@ TEST_F(TestDataGenerator, testAgentParams) {
 
 TEST_F(TestDataGenerator, testAdd) {
   correct_walker_ids(data_gen);
-  DataGeneratorAttorney::add_walker(data_gen);
+  kollagen::DataGeneratorAttorney::add_walker(data_gen);
   ASSERT_EQ(data_gen.Walkers().size(), 1);
 }
 
 TEST_F(TestDataGenerator, testAdd2) {
   correct_walker_ids(data_gen);
-  DataGeneratorAttorney::add_walker(data_gen, WalkerParams());
+  kollagen::DataGeneratorAttorney::add_walker(data_gen, kollagen::WalkerParams());
   ASSERT_EQ(data_gen.Walkers().size(), 1);
 }
 
 TEST_F(TestDataGenerator, testAdd3) {
   correct_walker_ids(data_gen);
-  DataGeneratorAttorney::add_walker(data_gen, walker_param_vec);
+  kollagen::DataGeneratorAttorney::add_walker(data_gen, walker_param_vec);
   ASSERT_EQ(data_gen.Walkers().size(), 3);
 }
 
 TEST_F(TestDataGenerator, testAdd4) {
   correct_walker_ids(data_gen);
-  DataGeneratorAttorney::add_walker(data_gen, walker_param_vec);
+  kollagen::DataGeneratorAttorney::add_walker(data_gen, walker_param_vec);
   ASSERT_EQ(data_gen.Walkers().size(), 3);
 }
 
@@ -137,8 +137,8 @@ void sort_pairs(std::vector<std::array<int,2>>& pairs){
 }
 
 void test_pairs(std::vector<std::array<int,2>>& correct, int N){
-  auto data_gen = DataGeneratorAttorney::ConstructDataGenerator(N);
-  auto pairs = DataGeneratorAttorney::get_all_pairs(data_gen);
+  auto data_gen = kollagen::DataGeneratorAttorney::ConstructDataGenerator(N);
+  auto pairs = kollagen::DataGeneratorAttorney::get_all_pairs(data_gen);
   sort_pairs(pairs);
   sort_pairs(correct);
   EXPECT_EQ(pairs.size(), correct.size());
@@ -164,23 +164,23 @@ TEST_F(TestDataGenerator, testGetAllPairs3Walkers){
 }
 
 TEST_F(TestDataGenerator, testSaveAndLoadBinary){
-  DataGenerator a = DataGeneratorAttorney::ConstructDataGenerator(1, 100);
+  kollagen::DataGenerator a = kollagen::DataGeneratorAttorney::ConstructDataGenerator(1, 100);
   auto walker = a.Walkers().front();
   a.save_poses_to_binary("walker");
-  auto x1 = load_binary<double>("walker1_x.bin");
-  auto y1 = load_binary<double>("walker1_y.bin");
-  auto theta1 = load_binary<double>("walker1_theta.bin");
+  auto x1 = kollagen::load_binary<double>("walker1_x.bin");
+  auto y1 = kollagen::load_binary<double>("walker1_y.bin");
+  auto theta1 = kollagen::load_binary<double>("walker1_theta.bin");
   EXPECT_EQ(x1, walker.X());
   EXPECT_EQ(y1, walker.Y());
   EXPECT_EQ(theta1, walker.Theta());
 }
 
 TEST_F(TestDataGenerator, testSaveMultiG2O){
-  DataGeneratorAttorney::add_walker(data_gen, walker_param_vec);
-  DataGeneratorAttorney::step(data_gen, 400);
-  DataGeneratorAttorney::intra_agent_loopclose(data_gen, lc_param_vec);
-  DataGeneratorAttorney::inter_agent_loopclose(data_gen, inter_lc_params);
-  DataGeneratorAttorney::set_data_has_been_generated(data_gen, true);
+  kollagen::DataGeneratorAttorney::add_walker(data_gen, walker_param_vec);
+  kollagen::DataGeneratorAttorney::step(data_gen, 400);
+  kollagen::DataGeneratorAttorney::intra_agent_loopclose(data_gen, lc_param_vec);
+  kollagen::DataGeneratorAttorney::inter_agent_loopclose(data_gen, inter_lc_params);
+  kollagen::DataGeneratorAttorney::set_data_has_been_generated(data_gen, true);
   EXPECT_EQ(data_gen.save_multig2o("multig2o"), EXIT_SUCCESS);
 }
 
@@ -190,24 +190,24 @@ TEST_F(TestDataGenerator, testSaveSingleG2O){
   }
   inter_lc_params.prob_scale=1.0;
   inter_lc_params.radius=1.0;
-  DataGeneratorAttorney::add_walker(data_gen, walker_param_vec);
-  DataGeneratorAttorney::step(data_gen, 4);
-  DataGeneratorAttorney::intra_agent_loopclose(data_gen, lc_param_vec);
-  DataGeneratorAttorney::inter_agent_loopclose(data_gen, inter_lc_params);
-  DataGeneratorAttorney::set_data_has_been_generated(data_gen, true);
+  kollagen::DataGeneratorAttorney::add_walker(data_gen, walker_param_vec);
+  kollagen::DataGeneratorAttorney::step(data_gen, 4);
+  kollagen::DataGeneratorAttorney::intra_agent_loopclose(data_gen, lc_param_vec);
+  kollagen::DataGeneratorAttorney::inter_agent_loopclose(data_gen, inter_lc_params);
+  kollagen::DataGeneratorAttorney::set_data_has_been_generated(data_gen, true);
   EXPECT_EQ(data_gen.save_singleg2o("single.g2o", false), EXIT_SUCCESS);
 }
 
 TEST_F(TestDataGenerator, testAlign){
   walker_param_vec.pop_back();
   walker_param_vec.at(1).x += 1.0;
-  DataGenerator a = DataGeneratorAttorney::ConstructDataGenerator(walker_param_vec);
-  DataGeneratorAttorney::step_forward(a);
-  DataGeneratorAttorney::step_forward(a);
-  DataGeneratorAttorney::step_right(a);
-  DataGeneratorAttorney::step_left(a);
+  kollagen::DataGenerator a = kollagen::DataGeneratorAttorney::ConstructDataGenerator(walker_param_vec);
+  kollagen::DataGeneratorAttorney::step_forward(a);
+  kollagen::DataGeneratorAttorney::step_forward(a);
+  kollagen::DataGeneratorAttorney::step_right(a);
+  kollagen::DataGeneratorAttorney::step_left(a);
 
-  DataGeneratorAttorney::align_center_of_masses(a);
+  kollagen::DataGeneratorAttorney::align_center_of_masses(a);
 
   double x1 = a.Walkers().at(0).X().at(0);
   double x2 = a.Walkers().at(1).X().at(0);
@@ -219,9 +219,9 @@ TEST_F(TestDataGenerator, testAlign){
   EXPECT_DOUBLE_EQ(y1, y2);
 }
 
-int max_seed_from_param_vec(std::vector<WalkerParams> param_vec){
-  DataGenerator a = DataGeneratorAttorney::ConstructDataGenerator(param_vec);
-  return DataGeneratorAttorney::get_max_seed(a);
+int max_seed_from_param_vec(std::vector<kollagen::WalkerParams> param_vec){
+  kollagen::DataGenerator a = kollagen::DataGeneratorAttorney::ConstructDataGenerator(param_vec);
+  return kollagen::DataGeneratorAttorney::get_max_seed(a);
 }
 
 TEST_F(TestDataGenerator, testGetMaxSeed){
@@ -239,22 +239,22 @@ TEST_F(TestDataGenerator, testGetMaxSeed){
 
 TEST_F(TestDataGenerator, testSeedAlreadyUsed){
   walker_param_vec.at(0).seed = 2468;
-  DataGenerator a = DataGeneratorAttorney::ConstructDataGenerator(walker_param_vec);
-  EXPECT_TRUE(DataGeneratorAttorney::seed_already_used(a, 2468));
-  EXPECT_TRUE(DataGeneratorAttorney::seed_already_used(a, 2));
-  EXPECT_TRUE(DataGeneratorAttorney::seed_already_used(a, 3));
+  kollagen::DataGenerator a = kollagen::DataGeneratorAttorney::ConstructDataGenerator(walker_param_vec);
+  EXPECT_TRUE(kollagen::DataGeneratorAttorney::seed_already_used(a, 2468));
+  EXPECT_TRUE(kollagen::DataGeneratorAttorney::seed_already_used(a, 2));
+  EXPECT_TRUE(kollagen::DataGeneratorAttorney::seed_already_used(a, 3));
 }
 
-bool all_walkers_have_same_stepsize(const DataGenerator& a){
+bool all_walkers_have_same_stepsize(const kollagen::DataGenerator& a){
   auto walkers = a.Walkers();
   auto stepsize = walkers.at(0).stepsize();
-  return std::ranges::all_of(walkers.cbegin(), walkers.cend(), [&stepsize](const Walker& walker){ return walker.stepsize() == stepsize; });
+  return std::ranges::all_of(walkers.cbegin(), walkers.cend(), [&stepsize](const kollagen::Walker& walker){ return walker.stepsize() == stepsize; });
 }
 
-bool all_walkers_have_same_step_fragment(const DataGenerator& a){
+bool all_walkers_have_same_step_fragment(const kollagen::DataGenerator& a){
   auto walkers = a.Walkers();
   auto step_fragment = walkers.at(0).step_fragment();
-  return std::ranges::all_of(walkers.cbegin(), walkers.cend(), [&step_fragment](const Walker& walker){ return walker.step_fragment() == step_fragment; });
+  return std::ranges::all_of(walkers.cbegin(), walkers.cend(), [&step_fragment](const kollagen::Walker& walker){ return walker.step_fragment() == step_fragment; });
 }
 
 TEST_F(TestDataGenerator, testAddWalker){
@@ -262,7 +262,7 @@ TEST_F(TestDataGenerator, testAddWalker){
   walker_param_vec.at(1).stepsize = 2.5;
   walker_param_vec.at(2).stepsize = 1.0;
   walker_param_vec.at(2).step_fragment = 9;
-  DataGenerator a = DataGeneratorAttorney::ConstructDataGenerator(walker_param_vec);
+  kollagen::DataGenerator a = kollagen::DataGeneratorAttorney::ConstructDataGenerator(walker_param_vec);
   EXPECT_TRUE(all_walkers_have_same_stepsize(a));
   EXPECT_TRUE(all_walkers_have_same_step_fragment(a));
 }

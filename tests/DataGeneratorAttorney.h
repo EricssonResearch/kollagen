@@ -1,7 +1,10 @@
-#include "DataGenerator.h"
+#include "kollagen/DataGenerator.h"
 
 #ifndef DATAGENERATORATTORNEY_H
 #define DATAGENERATORATTORNEY_H
+
+namespace kollagen
+{
 
 class DataGeneratorAttorney
 {
@@ -89,4 +92,5 @@ inline DataGenerator DataGeneratorAttorney::ConstructDataGenerator(int number_of
   return data_gen;
 }
 
+}  // namespace kollagen
 #endif /* !DATAGENERATORATTORNEY_H */

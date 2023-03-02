@@ -3,14 +3,21 @@
 
 set -e
 
+ROOT_DIR=`pwd`
+
 source ./.build_helper.sh
 
-generate_data_download_debian_packages
-generate_data_python_environment
-generate_data_python_dependencies
-generate_data_prepare_build
-generate_data_cmake
-generate_data_build
-generate_data_run_tests
-generate_data_plot_and_animate
-generate_data_build_docs
+kollagen_download_debian_packages
+kollagen_python_environment
+kollagen_python_dependencies
+cd "$ROOT_DIR"
+kollagen_prepare_build
+cd build
+kollagen_cmake
+kollagen_build
+kollagen_run_tests
+kollagen_run_example
+#kollagen_plot_and_animate
+cd "$ROOT_DIR"
+kollagen_build_pip_package
+kollagen_build_docs
