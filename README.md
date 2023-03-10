@@ -126,3 +126,18 @@ Building has been tested with MSVC v143 with Windows 10 SDK 10.0.20348.
 ### macOS
 
 Python installation with pip has been testen on macOS Monterey 12.6.2 with clang 14.0.0
+
+## Citation
+
+If using kollagen in your research, we would appreciate if you could cite our work:
+
+```bibtex
+@misc{kollagen,
+  doi = {10.48550/ARXIV.2303.04753},
+  url = {https://arxiv.org/abs/2303.04753},
+  author = {Sundin, Roberto C. and Umsonst, David},
+  title = {kollagen: A Collaborative SLAM Pose Graph Generator},
+  publisher = {arXiv},
+  year = {2023},
+}
+```
