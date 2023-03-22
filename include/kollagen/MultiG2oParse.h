@@ -310,7 +310,7 @@ inline MultiG2O parse(const MultiG2OPaths& paths, const bool& _3D){
     multi_g2o.agents.emplace_back(get_agent_entries(g2o_path, gt_path, _3D));
   }
   multi_g2o.inter_agent_lcs = get_inter_agent_lcs(paths.inter_agent_lc, _3D);
-  return {};
+  return multi_g2o;
 }
 
 }  // namespace helper
